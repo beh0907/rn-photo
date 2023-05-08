@@ -28,7 +28,7 @@ const SignInScreen = () => {
             dispatch({type: AuthFormTypes.TOGGLE_LOADING})
 
             try {
-                const user = await signIn(form.email, form.password)
+                const user = await signIn(form)
                 console.log(user)
             } catch (e) {
                 const errorMessage = getAuthErrorMessages(e.code)
