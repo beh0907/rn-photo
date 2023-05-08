@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useReducer, useRef, useState} from 'react';
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
-import {Image, Keyboard, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Alert, Image, Keyboard, ScrollView, StyleSheet, Text, View} from "react-native";
 import {AuthRoutes} from "../navigations/Routes";
 import Input, {InputTypes, ReturnKeyTypes} from "../components/Input";
 import Button from "../components/Button";
@@ -11,6 +11,7 @@ import HR from "../components/HR";
 import {StatusBar} from "expo-status-bar";
 import {WHITE} from "../colors";
 import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
+import {signIn, getAuthErrorMessages} from "../api/Auth";
 
 const SignInScreen = () => {
     const navigation = useNavigation()
@@ -20,16 +21,23 @@ const SignInScreen = () => {
 
     const [form, dispatch] = useReducer(authFormReducer, initAuthForm)
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         Keyboard.dismiss()
 
         if (!form.disabled && !form.isLoading) {
             dispatch({type: AuthFormTypes.TOGGLE_LOADING})
-            console.log(form.email, form.password)
+
+            try {
+                const user = await signIn(form.email, form.password)
+                console.log(user)
+            } catch (e) {
+                const errorMessage = getAuthErrorMessages(e.code)
+                Alert.alert('로그인 실패', errorMessage)
+            }
+
             dispatch({type: AuthFormTypes.TOGGLE_LOADING})
         }
     }
-
     const updateForm = payload => {
         const newForm = {...form, ...payload}
         const disabled = !newForm.email || !newForm.password
@@ -47,10 +55,6 @@ const SignInScreen = () => {
             return () => dispatch({type: AuthFormTypes.RESET})
         }, [])
     )
-
-    // useEffect(() => {
-    //     setDisabled(!email || !password)
-    // }, [form.email, form.password])
 
     return (
         <SafeInputView>
