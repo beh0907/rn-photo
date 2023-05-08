@@ -16,7 +16,14 @@ export const ReturnKeyTypes = {
 
 export const InputTypes = {
     EMAIL: 'EMAIL',
-    PASSWORD: 'PASSWORD'
+    PASSWORD: 'PASSWORD',
+    PASSWORD_CONFIRM: 'PASSWORD_CONFIRM',
+}
+
+export const PasswordProps = {
+    keyboardType: 'default',
+    secureTextEntry: true,
+    iconName: {active: 'lock', inactive: 'lock-outline'}
 }
 
 const InputTypeProps = {
@@ -33,6 +40,12 @@ const InputTypeProps = {
         keyboardType: 'default',
         secureTextEntry: true,
         iconName: {active: "lock", inactive: 'lock-outline'},
+        ...PasswordProps
+    },
+    PASSWORD_CONFIRM: {
+        title: "PASSWORD_CONFIRM",
+        placeholder: "PASSWORD_CONFIRM",
+        ...PasswordProps
     }
 }
 

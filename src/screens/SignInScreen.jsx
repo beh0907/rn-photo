@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useNavigation} from "@react-navigation/native";
-import {Image, Keyboard, StyleSheet, Text, View} from "react-native";
+import React, {useCallback, useEffect, useReducer, useRef, useState} from 'react';
+import {useFocusEffect, useNavigation} from "@react-navigation/native";
+import {Image, Keyboard, ScrollView, StyleSheet, Text, View} from "react-native";
 import {AuthRoutes} from "../navigations/Routes";
 import Input, {InputTypes, ReturnKeyTypes} from "../components/Input";
 import Button from "../components/Button";
@@ -10,6 +10,7 @@ import TextButton from "../components/TextButton";
 import HR from "../components/HR";
 import {StatusBar} from "expo-status-bar";
 import {WHITE} from "../colors";
+import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
 
 const SignInScreen = () => {
     const navigation = useNavigation()
@@ -17,41 +18,58 @@ const SignInScreen = () => {
 
     const passwordRef = useRef()
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-    const [disabled, setDisabled] = useState(false)
-
-    useEffect(() => {
-        setDisabled(!email || !password)
-    }, [email, password])
+    const [form, dispatch] = useReducer(authFormReducer, initAuthForm)
 
     const onSubmit = () => {
         Keyboard.dismiss()
 
-        if (!disabled && !isLoading) {
-            setIsLoading(true)
-            console.log(email, password)
-            setIsLoading(false)
+        if (!form.disabled && !form.isLoading) {
+            dispatch({type: AuthFormTypes.TOGGLE_LOADING})
+            console.log(form.email, form.password)
+            dispatch({type: AuthFormTypes.TOGGLE_LOADING})
         }
     }
+
+    const updateForm = payload => {
+        const newForm = {...form, ...payload}
+        const disabled = !newForm.email || !newForm.password
+
+        dispatch({
+            type: AuthFormTypes.UPDATE_FORM,
+            payload: {disabled, ...payload}
+        })
+    }
+
+    //다른 화면에서 로그인 화면으로 포커스가 되돌아올 때
+    //기존 state 값들을 초기화
+    useFocusEffect(
+        useCallback(() => {
+            return () => dispatch({type: AuthFormTypes.RESET})
+        }, [])
+    )
+
+    // useEffect(() => {
+    //     setDisabled(!email || !password)
+    // }, [form.email, form.password])
 
     return (
         <SafeInputView>
             <StatusBar style={"light"}/>
-            <View style={[styles.container, {paddingTop: top}]}>
+            <View style={[defaultStyles.container, {paddingTop: top}]}>
                 <View style={StyleSheet.absoluteFill}>
                     <Image source={require('../../assets/cover.png')} style={{width: '100%'}} resizeMode={"cover"}/>
                 </View>
 
-                <View style={[styles.form, {paddingBottom: bottom ? bottom + 10 : 30}]}>
-                    <Text>Sign In</Text>
+                <ScrollView style={[defaultStyles.form, {paddingBottom: bottom ? bottom + 10 : 40}]}
+                            contentContainerStyle={{alignItems: 'center'}}
+                            bounces={false}
+                            keyboardShouldPersistTaps={'always'}>
                     <Input
                         styles={{
                             container: {marginBottom: 20},
                         }}
-                        value={email}
-                        onChangeText={(text) => setEmail(text.trim())}
+                        value={form.email}
+                        onChangeText={(text) => updateForm({email: text.trim()})}
                         inputType={InputTypes.EMAIL}
                         returnKeyType={ReturnKeyTypes.NEXT}
                         onSubmitEditing={() => passwordRef.current.focus()}
@@ -61,8 +79,8 @@ const SignInScreen = () => {
                         styles={{
                             container: {marginBottom: 20},
                         }}
-                        value={password}
-                        onChangeText={(text) => setPassword(text.trim())}
+                        value={form.password}
+                        onChangeText={(text) => updateForm({password: text.trim()})}
                         inputType={InputTypes.PASSWORD}
                         returnKeyType={ReturnKeyTypes.DONE}
                         onSubmitEditing={onSubmit}
@@ -70,8 +88,8 @@ const SignInScreen = () => {
 
                     <Button title="로그인"
                             onPress={onSubmit}
-                            disabled={disabled}
-                            isLoading={isLoading}
+                            disabled={form.disabled}
+                            isLoading={form.isLoading}
                             style={{
                                 container: {
                                     marginTop: 20
@@ -82,19 +100,19 @@ const SignInScreen = () => {
                     <HR text={'OR'} styles={{container: {marginVertical: 30}}}/>
 
                     <TextButton onPress={() => navigation.navigate(AuthRoutes.SIGN_UP)} title={"회원 가입"}/>
-                </View>
+                </ScrollView>
             </View>
         </SafeInputView>
     );
 };
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-end",
     },
     form: {
-        alignItems: 'center',
+        flexGrow: 0,
         backgroundColor: WHITE,
         paddingHorizontal: 20,
         paddingTop: 40,
