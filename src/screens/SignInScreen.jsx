@@ -12,6 +12,7 @@ import {StatusBar} from "expo-status-bar";
 import {WHITE} from "../colors";
 import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
 import {signIn, getAuthErrorMessages} from "../api/Auth";
+import {useUserState} from "../context/UserContext";
 
 const SignInScreen = () => {
     const navigation = useNavigation()
@@ -20,6 +21,7 @@ const SignInScreen = () => {
     const passwordRef = useRef()
 
     const [form, dispatch] = useReducer(authFormReducer, initAuthForm)
+    const [,setUser] = useUserState()
 
     const onSubmit = async () => {
         Keyboard.dismiss()
@@ -29,13 +31,14 @@ const SignInScreen = () => {
 
             try {
                 const user = await signIn(form)
-                console.log(user)
+                setUser(user)
             } catch (e) {
                 const errorMessage = getAuthErrorMessages(e.code)
-                Alert.alert('로그인 실패', errorMessage)
+                Alert.alert('로그인 실패', errorMessage, [{
+                    text:'확인',
+                    onPress: () => dispatch({type: AuthFormTypes.TOGGLE_LOADING})
+                }])
             }
-
-            dispatch({type: AuthFormTypes.TOGGLE_LOADING})
         }
     }
     const updateForm = payload => {

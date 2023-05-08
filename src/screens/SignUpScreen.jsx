@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer, useRef, useState} from 'react';
-import {Image, Keyboard, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Alert, Image, Keyboard, ScrollView, StyleSheet, Text, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import TextButton from "../components/TextButton";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -10,6 +10,8 @@ import Button from "../components/Button";
 import HR from "../components/HR";
 import SafeInputView from "../components/SafeInputView";
 import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
+import {getAuthErrorMessages, signUp} from "../api/Auth";
+import {useUserState} from "../context/UserContext";
 
 const SignUpScreen = () => {
     const navigation = useNavigation()
@@ -19,6 +21,7 @@ const SignUpScreen = () => {
     const passwordConfirmRef = useRef()
 
     const [form, dispatch] = useReducer(authFormReducer, initAuthForm);
+    const [, setUser] = useUserState()
 
     const updateForm = (payload) => {
         const newForm = { ...form, ...payload };
@@ -38,8 +41,17 @@ const SignUpScreen = () => {
 
         if (!form.disabled && !form.isLoading) {
             dispatch({type: AuthFormTypes.TOGGLE_LOADING})
-            console.log(form.email, form.password)
-            dispatch({type: AuthFormTypes.TOGGLE_LOADING})
+
+            try {
+                const user = signUp(form)
+                setUser(user) // 회원가입 성공 시 자동 로그인
+            } catch (e) {
+                const errorMessage = getAuthErrorMessages(e.code)
+                Alert.alert('회원가입 실패', errorMessage, [{
+                    text:'확인',
+                    onPress: () => dispatch({type: AuthFormTypes.TOGGLE_LOADING})
+                }])
+            }
         }
     }
 

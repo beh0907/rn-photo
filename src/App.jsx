@@ -1,7 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import Navigation from "./navigations/Navigation";
-import ReducerTest from "./ReducerTest";
 import {LogBox} from "react-native";
+import {UserProvider} from "./context/UserContext";
 
 export default function App() {
     LogBox.ignoreLogs([
@@ -9,9 +9,9 @@ export default function App() {
     ])
 
     return (
-        <>
+        <UserProvider>
             <StatusBar style="dark"/>
             <Navigation/>
-        </>
+        </UserProvider>
     );
 }
