@@ -4,6 +4,8 @@ import {MainRoutes} from "./Routes";
 import {WHITE} from "../colors";
 import ContentTab from "./ContentTab";
 import SelectPhotosScreen from "../screens/SelectPhotosScreen";
+import UpdateProfilesScreen from "../screens/UpdateProfilesScreen";
+import HeaderLeft from "../components/HeaderLeft";
 
 const Stack = createNativeStackNavigator()
 
@@ -11,10 +13,12 @@ const MainStack = () => {
     return (
         <Stack.Navigator screenOptions={{
             contentStyle: {backgroundColor: WHITE},
-            headerShown: false
+            title: '',
+            headerLeft: HeaderLeft,
         }}>
-            <Stack.Screen name={MainRoutes.CONTENT_TAB} component={ContentTab}/>
+            <Stack.Screen name={MainRoutes.CONTENT_TAB} component={ContentTab} options={{headerShown: false}}/>
             <Stack.Screen name={MainRoutes.SELECT_PHOTOS} component={SelectPhotosScreen}/>
+            <Stack.Screen name={MainRoutes.UPDATE_PHOTOS} component={UpdateProfilesScreen}/>
         </Stack.Navigator>
     );
 };

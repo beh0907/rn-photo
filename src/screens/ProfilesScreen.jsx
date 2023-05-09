@@ -7,11 +7,14 @@ import {GRAY, WHITE} from "../colors";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import FastImage from "../components/FastImage";
 import DangerAlert, {AlertTypes} from "../components/DangerAlert";
+import {useNavigation} from "@react-navigation/native";
+import {MainRoutes} from "../navigations/Routes";
 
 const ProfilesScreen = () => {
     const [visible, setVisible] = useState(false)
     const [user, setUser] = useUserState()
     const {top} = useSafeAreaInsets()
+    const navigation = useNavigation()
 
     return (
         <View style={[styles.container, {paddingTop: top}]}>
@@ -30,7 +33,7 @@ const ProfilesScreen = () => {
             <View style={styles.profile}>
                 <View style={[styles.photo, user.photoURL || {backgroundColor: GRAY.DEFAULT}]}>
                     <FastImage source={{uri: user.photoURL}} style={styles.photo}/>
-                    <Pressable style={styles.editButton} onPress={() => console.log('UPDATE')}>
+                    <Pressable style={styles.editButton} onPress={() => navigation.navigate(MainRoutes.UPDATE_PHOTOS)}>
                         <MaterialCommunityIcons name='pencil' size={20} color={WHITE}/>
                     </Pressable>
                 </View>
