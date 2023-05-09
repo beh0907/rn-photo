@@ -1,4 +1,14 @@
-import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, AuthErrorCodes} from 'firebase/auth'
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    AuthErrorCodes,
+    onAuthStateChanged as onAuthStateChangedFirebase,
+    signOut as signOutFirebase,
+    updateProfile
+} from 'firebase/auth'
+
+const PHOTO_URL = '.../o/profile.png?alt-media'
 
 export const signIn = async ({email, password}) => {
     const {user} = await signInWithEmailAndPassword(
@@ -17,7 +27,17 @@ export const signUp = async ({email, password}) => {
         password
     )
 
+    await updateUserInfo({
+        displayName: email.split('@')[0].slice(0, 10),
+        photoURL: PHOTO_URL
+    })
+
     return user
+}
+
+
+export const signOut = async () => {
+    await signOutFirebase(getAuth())
 }
 
 export const getAuthErrorMessages = (error) => {
@@ -34,5 +54,17 @@ export const getAuthErrorMessages = (error) => {
             return '비밀번호는 최소 6자리입니다.'
         default:
             return '로그인에 실패하였습니다'
+    }
+}
+
+export const onAuthStateChanged = (callback) => {
+    return onAuthStateChangedFirebase(getAuth(), callback)
+}
+
+export const updateUserInfo = async userInfo => {
+    try {
+        await updateProfile(getAuth().currentUser, userInfo)
+    } catch (e) {
+        throw new Error('사용자 정보 수정에 실패하였습니다.')
     }
 }

@@ -36,14 +36,14 @@ const SignUpScreen = () => {
         });
     }
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         Keyboard.dismiss()
 
         if (!form.disabled && !form.isLoading) {
             dispatch({type: AuthFormTypes.TOGGLE_LOADING})
 
             try {
-                const user = signUp(form)
+                const user = await signUp(form)
                 setUser(user) // 회원가입 성공 시 자동 로그인
             } catch (e) {
                 const errorMessage = getAuthErrorMessages(e.code)
