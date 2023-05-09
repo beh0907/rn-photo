@@ -5,7 +5,7 @@ import {GRAY, PRIMARY, WHITE} from "../colors";
 import {useNavigation} from "@react-navigation/native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 
-const Button = () => {
+const TabBarAddButton = () => {
     const navigation = useNavigation()
 
     return (
@@ -31,4 +31,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Button;
+export default TabBarAddButton;

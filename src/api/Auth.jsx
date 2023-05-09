@@ -8,7 +8,7 @@ import {
     updateProfile
 } from 'firebase/auth'
 
-const PHOTO_URL = '.../o/profile.png?alt-media'
+const PHOTO_URL = 'https://firebasestorage.googleapis.com/v0/b/rn-photo-1c0ab.appspot.com/o/profile.png?alt=media'
 
 export const signIn = async ({email, password}) => {
     const {user} = await signInWithEmailAndPassword(
