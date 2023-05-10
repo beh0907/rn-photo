@@ -17,6 +17,7 @@
     "@types/react-native": "^0.71.6",
     "expo": "~48.0.15",
     "expo-asset": "~8.9.1",
+    "expo-blur": "~12.2.2",
     "expo-crypto": "~12.2.1",
     "expo-file-system": "~15.2.2",
     "expo-media-library": "~15.2.3",
