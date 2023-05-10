@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Image, Pressable, StyleSheet, Text, View} from "react-native";
-import {useUserState} from "../context/UserContext";
+import {useUserState} from "../contexts/UserContext";
 import {signOut} from "../api/Auth";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {GRAY, WHITE} from "../colors";

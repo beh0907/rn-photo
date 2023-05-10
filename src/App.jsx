@@ -1,7 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import Navigation from "./navigations/Navigation";
 import {LogBox} from "react-native";
-import {UserProvider} from "./context/UserContext";
+import {UserProvider} from "./contexts/UserContext";
 
 export default function App() {
     LogBox.ignoreLogs([

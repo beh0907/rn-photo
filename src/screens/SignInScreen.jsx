@@ -12,7 +12,7 @@ import {StatusBar} from "expo-status-bar";
 import {WHITE} from "../colors";
 import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
 import {signIn, getAuthErrorMessages} from "../api/Auth";
-import {useUserState} from "../context/UserContext";
+import {useUserState} from "../contexts/UserContext";
 
 const SignInScreen = () => {
     const navigation = useNavigation()

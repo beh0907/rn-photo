@@ -4,7 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import AuthStack from "./AuthStack";
 import {Asset} from "expo-asset";
 import {initFirebase} from "../api/Firebase";
-import {useUserState} from "../context/UserContext";
+import {useUserState} from "../contexts/UserContext";
 import MainStack from "./MainStack";
 import {onAuthStateChanged} from "../api/Auth";
 

@@ -11,7 +11,7 @@ import HR from "../components/HR";
 import SafeInputView from "../components/SafeInputView";
 import {authFormReducer, initAuthForm, AuthFormTypes} from "../reducer/AuthFormReducer";
 import {getAuthErrorMessages, signUp} from "../api/Auth";
-import {useUserState} from "../context/UserContext";
+import {useUserState} from "../contexts/UserContext";
 
 const SignUpScreen = () => {
     const navigation = useNavigation()

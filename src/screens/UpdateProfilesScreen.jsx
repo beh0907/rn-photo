@@ -1,100 +1,121 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Keyboard, Platform, Pressable, StyleSheet, TextInput, View} from "react-native";
-import {useUserState} from "../context/UserContext";
-import {updateUserInfo} from "../api/Auth";
-import {GRAY, WHITE} from "../colors";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-import FastImage from "../components/FastImage";
-import {useNavigation, useRoute} from "@react-navigation/native";
-import SafeInputView from "../components/SafeInputView";
-import HeaderRight from "../components/HeaderRight";
-import {MainRoutes} from "../navigations/Routes";
-import {getLocalUri} from "../components/ImagePicker";
-import {uploadPhoto} from "../api/Storage";
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+    Alert,
+    Keyboard,
+    Pressable,
+    StyleSheet,
+    TextInput,
+    View,
+    Platform,
+} from 'react-native';
+import {GRAY, WHITE} from '../colors';
+import FastImage from '../components/FastImage';
+import {useUserState} from '../contexts/UserContext';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import SafeInputView from '../components/SafeInputView';
+import {useLayoutEffect, useEffect, useState, useCallback} from 'react';
+import HeaderRight from '../components/HeaderRight';
+import {updateUserInfo} from '../api/Auth';
+import {MainRoutes} from '../navigations/Routes';
+import {getLocalUri} from '../components/ImagePicker';
+import {uploadPhoto} from '../api/Storage';
 
-const UpdateProfilesScreen = () => {
-    const navigation = useNavigation()
-    const {params} = useRoute()
-    const [user, setUser] = useUserState()
+const UpdateProfileScreen = () => {
+    const navigation = useNavigation();
+    const {params} = useRoute();
 
-    const [photo, setPhoto] = useState({uri: user.photoURL})
-    console.log(photo.uri)
+    const [user, setUser] = useUserState();
 
-    const [displayName, setDisplayName] = useState(user.displayName)
-    const [disabled, setDisabled] = useState(true)
-    const [isLoading, setIsLoading] = useState(false)
+    const [photo, setPhoto] = useState({uri: user.photoURL});
+    const [displayName, setDisplayName] = useState(user.displayName);
+    const [disabled, setDisabled] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (params) {
-            const {selectedPhotos} = params
-
-
+            const {selectedPhotos} = params;
             if (selectedPhotos?.length) {
-                //다중 선택 시 일단 가장 첫번째 이미지를 적용한다
-                setPhoto(selectedPhotos[0])
-                console.log(photo.uri)
+                setPhoto(selectedPhotos[0]);
             }
         }
-    }, [params])
+    }, [params]);
+
+    useEffect(() => {
+        setDisabled(!displayName || isLoading);
+    }, [displayName, isLoading]);
 
     const onSubmit = useCallback(async () => {
-        Keyboard.dismiss()
-
-        if (!isLoading) {
-            setIsLoading(true)
-
+        Keyboard.dismiss();
+        if (!disabled) {
+            setIsLoading(true);
             try {
                 const localUri = Platform.select({
                     ios: await getLocalUri(photo.id),
-                    android: photo.uri
-                })
-
+                    android: photo.uri,
+                });
                 const photoURL = await uploadPhoto({
                     uri: localUri,
-                    uid: user.uid
-                })
+                    uid: user.uid,
+                });
 
-                const userInfo = {displayName, photoURL}
+                const userInfo = {displayName, photoURL};
 
-                await updateUserInfo(userInfo)
-                setUser(prev => ({...prev, ...userInfo}))
+                await updateUserInfo(userInfo);
+                setUser((prev) => ({...prev, ...userInfo}));
 
-                navigation.goBack()
+                navigation.goBack();
             } catch (e) {
-                Alert.alert('유저 정보 수정 실패', e.message)
-                setIsLoading(false)
+                Alert.alert('사용자 수정 실패', e.message);
+                setIsLoading(false);
             }
-
         }
-    }, [disabled, displayName, navigation, setUser, photo.id, photo.uri, user.uid])
-
-    useEffect(() => {
-        setDisabled(!displayName || isLoading)
-    }, [displayName, isLoading])
+    }, [
+        disabled,
+        displayName,
+        navigation,
+        setUser,
+        photo.id,
+        photo.uri,
+        user.uid,
+    ]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerRight: () => <HeaderRight onPress={onSubmit} disabled={disabled}/>
-        })
-    }, [navigation, disabled, onSubmit])
+            headerRight: () => <HeaderRight disabled={disabled} onPress={onSubmit}/>,
+        });
+    }, [navigation, disabled, onSubmit]);
 
     return (
         <SafeInputView>
             <View style={styles.container}>
-                <View style={[styles.photo, user.photoURL || {backgroundColor: GRAY.DEFAULT}]}>
+                <View
+                    style={[
+                        styles.photo,
+                        user.photoURL || {backgroundColor: GRAY.DEFAULT},
+                    ]}
+                >
                     <FastImage source={{uri: photo.uri}} style={styles.photo}/>
-                    <Pressable style={styles.imageButton} onPress={() => navigation.navigate(MainRoutes.IMAGE_PICKER)}>
-                        <MaterialCommunityIcons name='image' size={20} color={WHITE}/>
+                    <Pressable
+                        style={styles.imageButton}
+                        onPress={() => navigation.navigate(MainRoutes.IMAGE_PICKER)}
+                    >
+                        <MaterialCommunityIcons name="image" size={20} color={WHITE}/>
                     </Pressable>
                 </View>
 
                 <View>
-                    <TextInput value={displayName} style={styles.input} placeholder={'NickName'}
-                               onChangeText={text => {
-                                   setDisplayName(text.trim())
-                               }}
-                               textAlign={'center'} maxLength={10} returnKeyType={'done'} autoCapitalize={'none'}
-                               autoCorrect={false} textContentType={'none'}/>
+                    <TextInput
+                        value={displayName}
+                        onChangeText={(text) => setDisplayName(text.trim())}
+                        style={styles.input}
+                        placeholder="Nickname"
+                        textAlign="center"
+                        maxLength={10}
+                        returnKeyType="done"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        textContentType="none"
+                    />
                 </View>
             </View>
         </SafeInputView>
@@ -132,7 +153,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: GRAY.DEFAULT,
     },
-})
+});
 
-
-export default UpdateProfilesScreen;
+export default UpdateProfileScreen;

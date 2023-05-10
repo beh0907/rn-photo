@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
+import {Image} from 'react-native';
 import PropTypes from 'prop-types';
-import {Image} from "react-native";
-import * as FileSystem from 'expo-file-system'
-import * as Crypto from 'expo-crypto'
+import * as FileSystem from 'expo-file-system';
+import * as Crypto from 'expo-crypto';
 
 const FastImage = ({source, ...props}) => {
-    const [uri, setUri] = useState(source.uri)
+    const [uri, setUri] = useState(source.uri);
 
     useEffect(() => {
         (async () => {
@@ -25,16 +25,16 @@ const FastImage = ({source, ...props}) => {
 
                 setUri(fileSystemUri)
             } catch (e) {
-
+                setUri(source.uri);
             }
         })();
     }, [source.uri])
 
-    return <Image source={{uri}} {...props}/>
+    return <Image source={{uri}} {...props} />;
 };
 
 FastImage.propTypes = {
-    source: PropTypes.object.isRequired
+    source: PropTypes.object.isRequired,
 };
 
 export default FastImage;
