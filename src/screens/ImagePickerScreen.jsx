@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {Alert, FlatList, Image, Platform, Pressable, StyleSheet, View} from "react-native";
-import {useNavigation, useNavigationState} from "@react-navigation/native";
+import {useNavigation, useNavigationState, useRoute} from "@react-navigation/native";
 import HeaderRight from "../components/HeaderRight";
 import * as MediaLibrary from 'expo-media-library'
 import {MaterialCommunityIcons} from "@expo/vector-icons";
@@ -18,21 +18,22 @@ const ImagePickerScreen = () => {
     // goback으로 돌아갈 때 값을 저장하기 위한 네비게이션
     const stateRoutes = useNavigationState((state) => state.routes);
     const navigation = useNavigation();
+    const {params} = useRoute()
 
     const [selectedPhotos, setSelectedPhotos] = useState([]);
-    const maxCount = 1
+    const maxCount = params?.maxCount ?? 1
 
     const onSelect = useCallback(() => {
         //이전 화면의 값을 얻기 위해 -2 / -1은 현재
         const prevScreenName = stateRoutes[stateRoutes.length - 2].name;
-        navigation.navigate(prevScreenName, { selectedPhotos });
+        navigation.navigate(prevScreenName, {selectedPhotos});
     }, [navigation, selectedPhotos, stateRoutes]);
 
     //우측 상단 버튼
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <HeaderRight disabled={selectedPhotos.length < 1} onPress={onSelect} />
+                <HeaderRight disabled={selectedPhotos.length < 1} onPress={onSelect}/>
             ),
         });
     }, [navigation, onSelect, selectedPhotos.length]);
