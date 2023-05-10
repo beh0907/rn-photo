@@ -62,12 +62,12 @@ const SignInScreen = () => {
     return (
         <SafeInputView>
             <StatusBar style={"light"}/>
-            <View style={[defaultStyles.container, {paddingTop: top}]}>
+            <View style={[styles.container, {paddingTop: top}]}>
                 <View style={StyleSheet.absoluteFill}>
                     <Image source={require('../../assets/cover.png')} style={{width: '100%'}} resizeMode={"cover"}/>
                 </View>
 
-                <ScrollView style={[defaultStyles.form, {paddingBottom: bottom ? bottom + 10 : 40}]}
+                <ScrollView style={[styles.form, {paddingBottom: bottom ? bottom + 10 : 40}]}
                             contentContainerStyle={{alignItems: 'center'}}
                             bounces={false}
                             keyboardShouldPersistTaps={'always'}>
@@ -113,7 +113,7 @@ const SignInScreen = () => {
     );
 };
 
-const defaultStyles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-end",

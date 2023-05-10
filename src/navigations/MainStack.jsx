@@ -6,6 +6,7 @@ import ContentTab from "./ContentTab";
 import SelectPhotosScreen from "../screens/SelectPhotosScreen";
 import UpdateProfilesScreen from "../screens/UpdateProfilesScreen";
 import HeaderLeft from "../components/HeaderLeft";
+import ImagePickerScreen from "../screens/ImagePickerScreen";
 
 const Stack = createNativeStackNavigator()
 
@@ -19,6 +20,7 @@ const MainStack = () => {
             <Stack.Screen name={MainRoutes.CONTENT_TAB} component={ContentTab} options={{headerShown: false}}/>
             <Stack.Screen name={MainRoutes.SELECT_PHOTOS} component={SelectPhotosScreen}/>
             <Stack.Screen name={MainRoutes.UPDATE_PHOTOS} component={UpdateProfilesScreen}/>
+            <Stack.Screen name={MainRoutes.IMAGE_PICKER} component={ImagePickerScreen}/>
         </Stack.Navigator>
     );
 };

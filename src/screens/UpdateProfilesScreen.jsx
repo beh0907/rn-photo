@@ -1,13 +1,14 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Button, Image, Keyboard, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {Alert, Keyboard, Pressable, StyleSheet, TextInput, View} from "react-native";
 import {useUserState} from "../context/UserContext";
-import {signOut, updateUserInfo} from "../api/Auth";
+import {updateUserInfo} from "../api/Auth";
 import {GRAY, WHITE} from "../colors";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import FastImage from "../components/FastImage";
 import {useNavigation} from "@react-navigation/native";
 import SafeInputView from "../components/SafeInputView";
 import HeaderRight from "../components/HeaderRight";
+import {MainRoutes} from "../navigations/Routes";
 
 const UpdateProfilesScreen = () => {
     const navigation = useNavigation()
@@ -53,7 +54,7 @@ const UpdateProfilesScreen = () => {
             <View style={styles.container}>
                 <View style={[styles.photo, user.photoURL || {backgroundColor: GRAY.DEFAULT}]}>
                     <FastImage source={{uri: user.photoURL}} style={styles.photo}/>
-                    <Pressable style={styles.imageButton} onPress={() => console.log('TOUCH')}>
+                    <Pressable style={styles.imageButton} onPress={() => navigation.navigate(MainRoutes.IMAGE_PICKER)}>
                         <MaterialCommunityIcons name='image' size={20} color={WHITE}/>
                     </Pressable>
                 </View>
