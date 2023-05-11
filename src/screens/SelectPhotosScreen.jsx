@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {Alert, Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
 import {BLACK, GRAY, PRIMARY, WHITE} from "../colors";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {MainRoutes} from "../navigations/Routes";
@@ -7,17 +7,54 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import Swiper from 'react-native-swiper'
 import {BlurView} from "expo-blur";
 import ImageSwiper from "../components/ImageSwiper";
+import HeaderRight from "../components/HeaderRight";
+import {getLocalUri} from "../components/ImagePicker";
 
 const SelectPhotosScreen = () => {
     const navigation = useNavigation()
     const {params} = useRoute()
 
     const width = useWindowDimensions().width
+
     const [photos, setPhotos] = useState([])
+    const [disabled, setDisabled] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         if (params) setPhotos(params.selectedPhotos ?? [])
     }, [params])
+
+    useEffect(() => {
+        setDisabled(isLoading || !photos.length)
+    }, [isLoading, photos.length])
+
+    const onSubmit = useCallback(async () => {
+        if (!disabled) {
+            setIsLoading(true)
+
+            try {
+                const localUris = await Promise.all(
+                    photos.map((photo) =>
+                        Platform.select({
+                            ios: getLocalUri(photo.id),
+                            android: photo.uri
+                        })
+                    )
+                );
+                navigation.replace(MainRoutes.WRITE_TEXT, {photoUris: localUris})
+            } catch (e) {
+                Alert.alert('사진 정보 조회를 실패하였습니다', e.message)
+                setIsLoading(false)
+            }
+
+        }
+    }, [disabled, photos, navigation])
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => <HeaderRight disabled={disabled} onPress={onSubmit}/>
+        })
+    }, [navigation, disabled, onSubmit])
 
     return (
         <View style={styles.container}>
@@ -61,17 +98,17 @@ const styles = StyleSheet.create({
     },
     dot: {
         backgroundColor: BLACK,
-        width:8,
-        height:8,
-        borderRadius:4,
-        margin:3
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        margin: 3
     },
     activeDot: {
         backgroundColor: PRIMARY.DEFAULT,
-        width:8,
-        height:8,
-        borderRadius:4,
-        margin:3
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        margin: 3
     }
 })
 
