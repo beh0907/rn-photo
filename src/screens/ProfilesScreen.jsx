@@ -9,6 +9,7 @@ import FastImage from "../components/FastImage";
 import DangerAlert, {AlertTypes} from "../components/DangerAlert";
 import {useNavigation} from "@react-navigation/native";
 import {MainRoutes} from "../navigations/Routes";
+import PostList from "../components/PostList";
 
 const ProfilesScreen = () => {
     const [visible, setVisible] = useState(false)
@@ -41,7 +42,9 @@ const ProfilesScreen = () => {
                 <Text style={styles.nickname}>{user.displayName || 'nickname'}</Text>
             </View>
 
-            <View style={styles.listContainer}></View>
+            <View style={styles.listContainer}>
+                <PostList isMyPost={true}/>
+            </View>
         </View>
     );
 };

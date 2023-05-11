@@ -7,19 +7,29 @@ import Button, {ButtonTypes} from "./Button";
 
 
 export const AlertTypes = {
-    LOGOUT: 'LOGOUT'
+    LOGOUT: 'LOGOUT',
+    DELETE_POST: 'DELETE_POST'
 }
 
 const DangerAlertProps = {
     LOGOUT: {
         iconName: 'logout-variant',
         title: '로그아웃',
-        message: '정말 로그아웃 하시겠습니까?'
+        message: '정말 로그아웃 하시겠습니까?',
+        cancleText: '취소',
+        confirmText: '로그아웃'
+    },
+    DELETE_POST: {
+        iconName: 'delete-variant',
+        title: '게시글 삭제',
+        message: '정말 게시글을 삭제 하시겠습니까?',
+        cancleText: '취소',
+        confirmText: '삭제'
     }
 }
 
 const DangerAlert = ({visible, onClose, alertType, onConfirm}) => {
-    const {iconName, title, message} = DangerAlertProps[alertType]
+    const {iconName, title, message, cancleText, confirmText} = DangerAlertProps[alertType]
 
     return (
         <Modal
@@ -41,8 +51,10 @@ const DangerAlert = ({visible, onClose, alertType, onConfirm}) => {
                     <Text style={styles.desc}>{message}</Text>
 
                     <View style={styles.buttonContainer}>
-                        <Button onPress={onClose} title={'취소'} styles={buttonStyles} buttonType={ButtonTypes.CANCLE}/>
-                        <Button onPress={onConfirm} title={'로그아웃'} styles={buttonStyles} buttonType={ButtonTypes.DANGER}/>
+                        <Button onPress={onClose} title={cancleText} styles={buttonStyles}
+                                buttonType={ButtonTypes.CANCLE}/>
+                        <Button onPress={onConfirm} title={confirmText} styles={buttonStyles}
+                                buttonType={ButtonTypes.DANGER}/>
                     </View>
                 </View>
             </View>

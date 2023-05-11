@@ -2,6 +2,7 @@ import {StatusBar} from 'expo-status-bar';
 import Navigation from "./navigations/Navigation";
 import {LogBox} from "react-native";
 import {UserProvider} from "./contexts/UserContext";
+import {ActionSheetProvider} from "@expo/react-native-action-sheet";
 
 export default function App() {
     LogBox.ignoreLogs([
@@ -9,9 +10,11 @@ export default function App() {
     ])
 
     return (
-        <UserProvider>
-            <StatusBar style="dark"/>
-            <Navigation/>
-        </UserProvider>
+        <ActionSheetProvider>
+            <UserProvider>
+                <StatusBar style="dark"/>
+                <Navigation/>
+            </UserProvider>
+        </ActionSheetProvider>
     );
 }

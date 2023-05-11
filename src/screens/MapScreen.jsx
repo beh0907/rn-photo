@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, View} from "react-native";
 import {WHITE} from "../colors";
+import MapView from "react-native-maps";
 
 const MapScreen = () => {
     return (
         <View style={styles.container}>
-            <Text>MAP</Text>
+            <MapView style={styles.map}/>
         </View>
     );
 };
@@ -18,6 +19,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    map: {
+        width: '100%',
+        height: '100%',
     }
 })
 

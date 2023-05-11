@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {Alert, StyleSheet, Text, TextInput, useWindowDimensions, View} from "react-native";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import HeaderRight from "../components/HeaderRight";
@@ -7,7 +7,8 @@ import FastImage from "../components/FastImage";
 import LocationSearch from "../components/LocationSearch";
 import {useUserState} from "../contexts/UserContext";
 import {uploadPhoto} from "../api/Storage";
-import {createPost} from "../api/post";
+import {createPost, updatePost} from "../api/Post";
+import event, {EventTypes} from "../event";
 
 const MAX_TEXT_LENGTH = 50
 
@@ -18,14 +19,26 @@ const WriteTextScreen = () => {
 
     const [photoUris, setPhotoUris] = useState([])
     const [text, setText] = useState('')
+    const [location, setLocation] = useState('')
 
     const [disabled, setDisabled] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
-    const [location, setLocation] = useState('')
     const [user] = useUserState()
 
+    const locationRef = useRef(null)
+
     useEffect(() => {
-        if (params) setPhotoUris(params.photoUris ?? [])
+        if (params) {
+            const {photoUris, post} = params
+
+            if (photoUris) setPhotoUris(photoUris ?? [])
+            else if (post) {
+                setPhotoUris(post.photos)
+                setText(post.text)
+                setLocation(post.location)
+                locationRef.current?.setAddressText(post.location)
+            }
+        }
     }, [params])
 
     useEffect(() => {
@@ -36,20 +49,34 @@ const WriteTextScreen = () => {
         setIsLoading(true)
 
         try {
-            const photos = await Promise.all(photoUris.map(uri => uploadPhoto({uri, uid: user.uid})))
+            if (params?.photoUris) {
+                const photos = await Promise.all(photoUris.map(uri => uploadPhoto({uri, uid: user.uid})))
 
-            //게시글 작성
-            await createPost({photos, location, text, user})
+                //게시글 작성
+                await createPost({photos, location, text, user})
+
+                //새 게시글 등록 후 바로 리스트를 갱신시키기 위해 이벤트를 전달
+                event.emit(EventTypes.REFRESH)
+            } else if (params?.post) {
+                const {post} = params
+                const updatedPost = {...post, location, text};
+
+                // 본래 post의 값과 수정된 위치정보와 설명텍스트 정보를 덮어씌워 넘겨준다
+                await updatePost(updatedPost)
+
+                //게시글 수정 후 바로 리스트를 갱신시키기 위해 이벤트를 전달
+                event.emit(EventTypes.UPDATE, updatedPost)
+            }
 
             //작성이 완료됐다면 이전 페이지로 이동
             //이미지를 선택하는 화면에서 navigate가 아닌 replace를 썼기 때문에 탭 메뉴로 이동
             navigation.goBack()
         } catch (e) {
-            Alert.alert('글 작성 실패', e.message);
+            Alert.alert(e.message);
             setIsLoading(false)
         }
 
-    }, [photoUris, user, location, text, navigation])
+    }, [photoUris, user, location, text, navigation, params])
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -66,7 +93,7 @@ const WriteTextScreen = () => {
             </View>
 
             <LocationSearch onPress={({description}) => setLocation(description)} isLoading={isLoading}
-                            isSelected={!!location}/>
+                            isSelected={!!location} ref={locationRef}/>
 
             <View>
                 <TextInput value={text} onChangeText={(text) => setText(text)} maxLength={MAX_TEXT_LENGTH}

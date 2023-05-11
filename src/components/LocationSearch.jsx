@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {googleMapApiKey} from "../../env";
@@ -6,20 +6,22 @@ import {StyleSheet, View} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {GRAY, PRIMARY, WHITE} from "../colors";
 
-const LocationSearch = ({styles, onPress, isLoading, isSelected}) => {
+const LocationSearch = forwardRef(({styles, onPress, isLoading, isSelected}, ref) => {
     return (
         <View style={[defaultStyles.container, styles?.constructor]}>
             <GooglePlacesAutocomplete
-                placeholder={"지역을 설정해주세요"} styles={{
-                container: {flex: 0},
-                textInput: {paddingLeft: 30}
-            }}
+                placeholder={"지역을 설정해주세요"}
+                styles={{
+                    container: {flex: 0},
+                    textInput: {paddingLeft: 30}
+                }}
                 onPress={onPress}
                 onFail={e => console.log(e)}
                 query={{key: googleMapApiKey, language: 'ko'}}
                 debounce={400}
                 enablePoweredByContainer={false}
                 textInputProps={{editable: !isLoading}}
+                ref={ref}
             />
 
             <View style={[defaultStyles.icon, styles?.icon]}>
@@ -28,7 +30,7 @@ const LocationSearch = ({styles, onPress, isLoading, isSelected}) => {
             </View>
         </View>
     );
-};
+});
 
 LocationSearch.defaultProps = {
     isLoading: false,
