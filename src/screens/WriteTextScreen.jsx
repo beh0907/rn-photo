@@ -1,13 +1,13 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {StyleSheet, Text, TextInput, useWindowDimensions, View} from "react-native";
+import {Alert, StyleSheet, Text, TextInput, useWindowDimensions, View} from "react-native";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import HeaderRight from "../components/HeaderRight";
 import {GRAY, PRIMARY, WHITE} from "../colors";
 import FastImage from "../components/FastImage";
-import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {googleMapApiKey} from "../../env";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
 import LocationSearch from "../components/LocationSearch";
+import {useUserState} from "../contexts/UserContext";
+import {uploadPhoto} from "../api/Storage";
+import {createPost} from "../api/post";
 
 const MAX_TEXT_LENGTH = 50
 
@@ -22,6 +22,7 @@ const WriteTextScreen = () => {
     const [disabled, setDisabled] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [location, setLocation] = useState('')
+    const [user] = useUserState()
 
     useEffect(() => {
         if (params) setPhotoUris(params.photoUris ?? [])
@@ -34,11 +35,21 @@ const WriteTextScreen = () => {
     const onSubmit = useCallback(async () => {
         setIsLoading(true)
 
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 2000)
+        try {
+            const photos = await Promise.all(photoUris.map(uri => uploadPhoto({uri, uid: user.uid})))
 
-    }, [])
+            //게시글 작성
+            await createPost({photos, location, text, user})
+
+            //작성이 완료됐다면 이전 페이지로 이동
+            //이미지를 선택하는 화면에서 navigate가 아닌 replace를 썼기 때문에 탭 메뉴로 이동
+            navigation.goBack()
+        } catch (e) {
+            Alert.alert('글 작성 실패', e.message);
+            setIsLoading(false)
+        }
+
+    }, [photoUris, user, location, text, navigation])
 
     useLayoutEffect(() => {
         navigation.setOptions({

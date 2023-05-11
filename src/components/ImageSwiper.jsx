@@ -8,12 +8,12 @@ import {BLACK, GRAY, PRIMARY, WHITE} from "../colors";
 const ImageSwiper = ({photos}) => {
     return (
         <Swiper loop={false} dot={<View style={styles.dot}/>} activeDot={<View style={styles.activeDot}/>}>
-            {photos.map(({uri}, idx) => (
+            {photos.map((photo, idx) => (
                 <View key={idx} style={styles.photo}>
-                    <Image source={{uri}} style={StyleSheet.absoluteFill} resizeMode={'cover'}/>
+                    <Image source={{uri: photo.uri ?? photo}} style={StyleSheet.absoluteFill} resizeMode={'cover'}/>
 
                     <BlurView intensity={Platform.select({ios: 10, android: 100})}>
-                        <Image source={{uri}} style={styles.photo} resizeMode={'contain'}/>
+                        <Image source={{uri: photo.uri ?? photo}} style={styles.photo} resizeMode={'contain'}/>
                     </BlurView>
                 </View>
             ))}
@@ -33,17 +33,17 @@ const styles = StyleSheet.create({
     },
     dot: {
         backgroundColor: BLACK,
-        width:8,
-        height:8,
-        borderRadius:4,
-        margin:3
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        margin: 3
     },
     activeDot: {
         backgroundColor: PRIMARY.DEFAULT,
-        width:8,
-        height:8,
-        borderRadius:4,
-        margin:3
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        margin: 3
     }
 })
 
