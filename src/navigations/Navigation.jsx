@@ -37,7 +37,7 @@ const Navigation = () => {
                     unsubscribe()
                 })
             } catch (e) {
-                console.log(e)
+                // console.log(e)
                 setIsReady(true)
             }
         })()

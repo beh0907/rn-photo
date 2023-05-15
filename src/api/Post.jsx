@@ -53,9 +53,25 @@ export const createPost = async ({photos, location, text, user}) => {
     }
 };
 
-
 export const getPosts = async ({after, uid}) => {
     const option = getOption({after, uid})
+
+    const documentSnapshot = await getDocs(option)
+
+    const list = documentSnapshot.docs.map(doc => doc.data())
+    const last = documentSnapshot.docs[documentSnapshot.docs.length - 1]
+
+    return {list, last}
+}
+
+export const getPostsByLocation = async ({after, location}) => {
+    const collectionRef = collection(getFirestore(), 'posts')
+
+    //where절 location이 추가 됐기 때문에 관련 색인 설정을 파이어베이스로 진행해야한다
+    const option = after
+        ? query(collectionRef, where('location', '==', location), orderBy('createdTs', 'desc'), startAfter(after), limit(10))
+        : query(collectionRef, where('location', '==', location), orderBy('createdTs', 'desc'), limit(10))
+
 
     const documentSnapshot = await getDocs(option)
 
@@ -74,7 +90,7 @@ export const updatePost = async (post) => {
         await setDoc(doc(getFirestore(), `posts/${post.id}`), post);
     } catch (e) {
         // eslint-disable-next-line no-console
-        console.log('updatePost error: ', e);
+        // console.log('updatePost error: ', e);
         throw new Error('글 수정 실패');
     }
 };
