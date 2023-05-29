@@ -1,10 +1,11 @@
 import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-import {googleMapApiKey} from "../../env";
 import {StyleSheet, View} from "react-native";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {GRAY, PRIMARY, WHITE} from "../colors";
+import {GRAY, PRIMARY} from "../colors";
+
+export const GOOGLE_MAP_API_KEY = 'AIzaSyBTsrKg4o27nFhvkM8QAML6R8NqyXVbzz0'
 
 const LocationSearch = forwardRef(({styles, onPress, isLoading, isSelected, iconVisible}, ref) => {
     return (
@@ -17,7 +18,7 @@ const LocationSearch = forwardRef(({styles, onPress, isLoading, isSelected, icon
                 }}
                 onPress={onPress}
                 onFail={e => {}}
-                query={{key: googleMapApiKey, language: 'ko'}}
+                query={{key: GOOGLE_MAP_API_KEY, language: 'ko'}}
                 debounce={400}
                 enablePoweredByContainer={false}
                 textInputProps={{editable: !isLoading}}
